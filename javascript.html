@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darts Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 1px solid #000;
+            background-color: #fff;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        #score {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="dartboard" width="400" height="400"></canvas>
+    <button onclick="throwDart()">Throw Dart</button>
+    <div id="score">Score: 0</div>
+
+    <script>
+        const canvas = document.getElementById('dartboard');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+        let score = 0;
+
+        function drawDartboard() {
+            const colors = ['#000', '#fff', '#000', '#fff', '#000'];
+            const radii = [200, 160, 120, 80, 40];
+            for (let i = 0; i < colors.length; i++) {
+                ctx.beginPath();
+                ctx.arc(200, 200, radii[i], 0, Math.PI * 2);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+
+        function throwDart() {
+            const x = Math.random() * 400;
+            const y = Math.random() * 400;
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+            ctx.closePath();
+            calculateScore(x, y);
+        }
+
+        function calculateScore(x, y) {
+            const dx = x - 200;
+            const dy = y - 200;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            let points = 0;
+            if (distance < 40) {
+                points = 50;
+            } else if (distance < 80) {
+                points = 25;
+            } else if (distance < 120) {
+                points = 10;
+            } else if (distance < 160) {
+                points = 5;
+            } else if (distance < 200) {
+                points = 1;
+            }
+            score += points;
+            scoreDisplay.textContent = `Score: ${score}`;
+        }
+
+        drawDartboard();
+    </script>
+</body>
+</html>
