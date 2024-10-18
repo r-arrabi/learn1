@@ -1,2 +1,3 @@
-# learn1
+# learn1 project
+by sl-Obi
 learning python
