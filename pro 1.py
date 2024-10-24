@@ -20,8 +20,7 @@ while len(primes) < 10:
 
 #print(primes)
 
-for i in [1,2,3]:
-    print(i)
+
 
 #create list of primes multipled by 2
 primes_multiplied_by_2 = [p * 2 for p in primes]

@@ -18,54 +18,64 @@
             border: 1px solid #000;
             background-color: #fff;
         }
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-        }
         #score {
             margin-top: 20px;
             font-size: 20px;
         }
+        .controls {
+            margin-top: 20px;
+        }
+        button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
-    <canvas id="dartboard" width="400" height="400"></canvas>
-    <button onclick="throwDart()">Throw Dart</button>
+    <canvas id="dartboard" width="600" height="600"></canvas>
     <div id="score">Score: 0</div>
+    <div class="controls">
+        <button id="startButton">Start</button>
+        <button id="stopButton">Stop</button>
+    </div>
 
     <script>
         const canvas = document.getElementById('dartboard');
         const ctx = canvas.getContext('2d');
         const scoreDisplay = document.getElementById('score');
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
         let score = 0;
+        let dartX = 200;
+        let dartY = 200;
+        let boardX = 0;
+        let boardY = 0;
+        let intervalId;
 
-        function drawDartboard() {
+        function drawDartboard(x, y) {
             const colors = ['#000', '#fff', '#000', '#fff', '#000'];
             const radii = [200, 160, 120, 80, 40];
             for (let i = 0; i < colors.length; i++) {
                 ctx.beginPath();
-                ctx.arc(200, 200, radii[i], 0, Math.PI * 2);
+                ctx.arc(x + 200, y + 200, radii[i], 0, Math.PI * 2);
                 ctx.fillStyle = colors[i];
                 ctx.fill();
                 ctx.closePath();
             }
         }
 
-        function throwDart() {
-            const x = Math.random() * 400;
-            const y = Math.random() * 400;
+        function drawDart(x, y) {
             ctx.beginPath();
             ctx.arc(x, y, 5, 0, Math.PI * 2);
             ctx.fillStyle = 'red';
             ctx.fill();
             ctx.closePath();
-            calculateScore(x, y);
         }
 
         function calculateScore(x, y) {
-            const dx = x - 200;
-            const dy = y - 200;
+            const dx = x - (boardX + 200);
+            const dy = y - (boardY + 200);
             const distance = Math.sqrt(dx * dx + dy * dy);
             let points = 0;
             if (distance < 40) {
@@ -83,7 +93,42 @@
             scoreDisplay.textContent = `Score: ${score}`;
         }
 
-        drawDartboard();
+        canvas.addEventListener('mousemove', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            dartX = event.clientX - rect.left;
+            dartY = event.clientY - rect.top;
+            draw();
+        });
+
+        canvas.addEventListener('click', () => {
+            calculateScore(dartX, dartY);
+            draw();
+        });
+
+        function moveDartboard() {
+            boardX = Math.random() * (canvas.width - 400);
+            boardY = Math.random() * (canvas.height - 400);
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawDartboard(boardX, boardY);
+            drawDart(dartX, dartY);
+        }
+
+        startButton.addEventListener('click', () => {
+            if (!intervalId) {
+                intervalId = setInterval(moveDartboard, 2000); // Move the dartboard every 2 seconds
+            }
+        });
+
+        stopButton.addEventListener('click', () => {
+            clearInterval(intervalId);
+            intervalId = null;
+        });
+
+        draw();
     </script>
 </body>
 </html>
